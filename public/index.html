@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Muallim.uz — Aqlli O'qituvchi Yordamchisi</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    * {
+      font-family: var(--font-sans);
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    body {
+      background: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+                  radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.1) 0px, transparent 50%),
+                  radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                  #f8fafc;
+      min-height: 100vh;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphism & Cards */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    .card-master {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 12px 32px -8px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+    .card-master:hover {
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04), 0 18px 40px -10px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Spring buttons */
+    .btn-spring {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-spring:active {
+      transform: scale(0.96) translateY(1px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+      color: white;
+      box-shadow: 0 6px 20px -4px rgba(16, 185, 129, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 8px 26px -4px rgba(16, 185, 129, 0.55);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: scale(0.97) translateY(0);
+      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Option Pill Buttons (A, B, C, D) */
+    .opt-btn {
+      width: 48px;
+      height: 44px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 15px;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    }
+    .opt-btn:active {
+      transform: scale(0.92);
+    }
+    .opt-btn.selected {
+      background: linear-gradient(135deg, #059669, #0d9488);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+      transform: scale(1.08) translateY(-1px);
+    }
+
+    /* Ripple Pulsing Circle for Camera */
+    @keyframes rippleWave {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 0; }
+      100% { transform: scale(0.95); opacity: 0; }
+    }
+    .ripple-ring-1 { animation: rippleWave 2.8s cubic-bezier(0.25, 1, 0.5, 1) infinite; }
+    .ripple-ring-2 { animation: rippleWave 2.8s cubic-bezier(0.25, 1, 0.5, 1) 0.9s infinite; }
+
+    /* Keyframes */
+    @keyframes floatSoft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .anim-float { animation: floatSoft 3s ease-in-out infinite; }
+
+    @keyframes shimmerBar {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    .progress-bar-inner {
+      background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #10b981 100%);
+      background-size: 200% auto;
+      animation: shimmerBar 2s linear infinite;
+      transition: width 0.4s ease;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Input Field */
+    .input-field {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+      width: 100%;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #10b981;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.65);
+    }
+    .tab-active {
+      background: #ffffff;
+      color: #047857 !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+    .tbl-row {
+      transition: background 0.15s ease;
+    }
+    .tbl-row:hover {
+      background: #f0fdf9 !important;
+    }
+
+    /* Language Card */
+    .lang-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      background: white;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .lang-card:hover {
+      border-color: #10b981;
+      background: #f0fdf9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.15);
+    }
+    .lang-card.active {
+      border-color: #10b981;
+      background: #ecfdf5;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+    }
+  
+    /* Stepper Active / Inactive States */
+    #stepperStep1.active, #stepperStep2.active, #stepperStep3.active {
+      background: #ffffff !important;
+      color: #047857 !important;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08) !important;
+      font-weight: 800 !important;
+    }
+    #stepperStep1.active span:first-child, #stepperStep2.active span:first-child, #stepperStep3.active span:first-child {
+      background: #059669 !important;
+      color: #ffffff !important;
+    }
+    #stepperStep1:not(.active), #stepperStep2:not(.active), #stepperStep3:not(.active) {
+      background: transparent !important;
+      color: #64748b !important;
+      box-shadow: none !important;
+      font-weight: 600 !important;
+    }
+    #stepperStep1:not(.active) span:first-child, #stepperStep2:not(.active) span:first-child, #stepperStep3:not(.active) span:first-child {
+      background: #cbd5e1 !important;
+      color: #475569 !important;
+    }
+
+  
+    /* ==================== MOBILE PERFECTION STYLES ==================== */
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Safe Area Inset Support for iPhone Notch / Dynamic Island */
+    header {
+      padding-top: max(0.65rem, var(--sat));
+      padding-left: max(0.75rem, var(--sal));
+      padding-right: max(0.75rem, var(--sar));
+    }
+
+    main {
+      padding-left: max(0.75rem, var(--sal));
+      padding-right: max(0.75rem, var(--sar));
+      padding-bottom: max(5rem, calc(var(--sab) + 4.5rem));
+    }
+
+    /* Fluid Option Pill Buttons (A, B, C, D) for All Mobile Screens */
+    .opt-btn {
+      width: 42px;
+      height: 40px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      transition: all 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .opt-btn:active {
+      transform: scale(0.92);
+    }
+    .opt-btn.selected {
+      background: linear-gradient(135deg, #059669, #0d9488) !important;
+      border-color: transparent !important;
+      color: white !important;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
+      transform: scale(1.06);
+    }
+
+    /* Smaller phones (< 370px like iPhone SE, older Galaxy) */
+    @media (max-width: 370px) {
+      .opt-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+        border-radius: 10px;
+      }
+      .card-master {
+        padding: 0.85rem !important;
+        border-radius: 18px !important;
+      }
+      .glass-panel {
+        padding: 0.65rem !important;
+        border-radius: 20px !important;
+      }
+    }
+
+    /* Ultra-compact (< 330px) */
+    @media (max-width: 330px) {
+      .opt-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 11px;
+      }
+    }
+
+    /* Hide horizontal scrollbar but allow smooth scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col items-center pb-12">
+
+  <!-- ==================== DYNAMIC ISLAND HEADER ==================== -->
+  <header class="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-6 pt-2 sm:pt-3 pb-2 sticky top-0 z-40">
+    <div class="glass-panel rounded-3xl p-2.5 px-3.5 flex flex-col gap-2.5">
+      <!-- Top Row: Logo, Brand & Action Pills -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-md" style="background: linear-gradient(135deg, #059669, #0d9488); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35)">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h1 class="font-black text-base leading-tight gradient-text" data-i18n="appName">Muallim.uz</h1>
+              <span class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800">AI PRO</span>
+            </div>
+            <p id="headerSubtitle" class="text-[11px] text-slate-400 font-semibold leading-none mt-0.5" data-i18n="appSubtitleTest">Testlarni tezkor tekshiruvchi</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <!-- Til tugmasi -->
+          <button id="btnChangeLang" type="button" class="btn-spring text-xs font-bold px-2.5 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm flex items-center gap-1" title="Tilni almashtirish">
+            <span class="text-sm">🌐</span><span id="currentLangLabel">O'zbek</span>
+          </button>
+
+          <!-- Qo'llanma tugmasi -->
+          <button id="btnOpenGuide" type="button" class="btn-spring text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm flex items-center gap-1" title="Interaktiv yo'riqnoma">
+            <span data-i18n="guideBtn">Qo'llanma</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stepper Container (hidden as requested: 'kalit daftar va jurnal kerakmas') -->
+      <div id="stepperContainer" style="display: none !important;" class="hidden">
+        <button id="stepperStep1" type="button"></button>
+        <button id="stepperStep2" type="button"></button>
+        <button id="stepperStep3" type="button"></button>
+      </div>
+
+      <!-- Mode Switcher Tabs (Test / Insho / Matematika) -->
+      <div id="headerTabsContainer" class="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-slate-200/60">
+        <button id="tabModeTest" type="button" class="tab-active py-2 px-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 text-emerald-700">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span data-i18n="tabTest">Test</span>
+        </button>
+        <button id="tabModeEssay" type="button" class="py-2 px-2 rounded-xl text-xs font-semibold transition-all text-center flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+          <span data-i18n="tabEssay">Insho</span>
+        </button>
+        <button id="tabModeMath" type="button" class="py-2 px-2 rounded-xl text-xs font-semibold transition-all text-center flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span data-i18n="tabMath">Matematika</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Step badge indicator (for backward compatibility with app.js) -->
+  <span id="stepBadge" style="display: none !important;" class="hidden"></span>
+
+  <!-- ==================== ASOSIY KONTENT ==================== -->
+  <main class="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-6 pt-2 pb-20 flex-1 flex flex-col">
+
+    <!-- ==================== 1-SAHIFA: TEST KALITI ==================== -->
+    <section id="screen1" class="flex flex-col flex-1 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        <!-- Left Column: Controls, AI Key & Teacher Command (col-span-5) -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+          <!-- Savollar soni va presetlar kartochkasi -->
+          <div id="tourStepQuestionsCard" class="card-master p-4.5 bg-white">
+            <div class="flex items-center justify-between mb-3.5">
+              <div>
+                <h2 class="font-black text-slate-900 text-sm tracking-tight" data-i18n="questionCountTitle">Savollar soni</h2>
+                <p class="text-[11px] text-slate-400 font-medium" data-i18n="questionCountSub">Nechta savollik test?</p>
+              </div>
+              <!-- Stepper controller -->
+              <div class="flex items-center gap-2 rounded-2xl p-1.5 bg-slate-100/80 border border-slate-200">
+                <button id="btnDecreaseQuestions" type="button" class="btn-spring w-9 h-9 rounded-xl bg-white text-slate-800 font-black text-base flex items-center justify-center shadow-xs hover:bg-slate-50">－</button>
+                <span id="questionCountDisplay" class="font-black text-sm text-slate-900 min-w-[54px] text-center tabular-nums">10 ta</span>
+                <button id="btnIncreaseQuestions" type="button" class="btn-spring w-9 h-9 rounded-xl bg-white text-slate-800 font-black text-base flex items-center justify-center shadow-xs hover:bg-slate-50">＋</button>
+              </div>
+            </div>
+
+            <!-- Preset Pills -->
+            <div id="tourStepPresetButtons" class="grid grid-cols-5 gap-1.5">
+              <button type="button" class="btn-preset btn-spring py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-emerald-400 hover:text-emerald-700" data-count="10">10</button>
+              <button type="button" class="btn-preset btn-spring py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-emerald-400 hover:text-emerald-700" data-count="15">15</button>
+              <button type="button" class="btn-preset btn-spring py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-emerald-400 hover:text-emerald-700" data-count="20">20</button>
+              <button type="button" class="btn-preset btn-spring py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-emerald-400 hover:text-emerald-700" data-count="25">25</button>
+              <button type="button" class="btn-preset btn-spring py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-emerald-400 hover:text-emerald-700" data-count="30">30</button>
+            </div>
+          </div>
+
+          <!-- Tezkor AI Kalit kiritish kartochkasi -->
+          <div id="tourStepAutoKeyCard" class="card-master p-4 bg-gradient-to-br from-emerald-50/60 via-teal-50/40 to-white border border-emerald-200/80">
+            <div class="flex items-center justify-between mb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black shadow-xs">AI</span>
+                <span class="text-xs font-black text-emerald-950" data-i18n="autoKeyBanner">Kalitni avtomatik kiritish</span>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">Tezkor</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="file" id="keyImageUpload" accept="image/*" class="hidden">
+              <button type="button" id="btnUploadKeyImage" class="btn-spring py-3 px-3 rounded-2xl bg-white border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-center gap-2 shadow-xs hover:bg-emerald-50/50">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span data-i18n="btnKeyFromImage">Rasmdan (AI)</span>
+              </button>
+              <button type="button" id="btnOpenTextKeyModal" class="btn-spring py-3 px-3 rounded-2xl bg-white border border-indigo-200 text-indigo-800 text-xs font-bold flex items-center justify-center gap-2 shadow-xs hover:bg-indigo-50/50">
+                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span data-i18n="btnKeyFromText">Matndan nusxa</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Desktop Proceed CTA -->
+          <div class="hidden lg:block pt-1">
+            <button type="button" onclick="document.getElementById('btnProceedToCamera').click()" class="btn-primary btn-spring w-full py-4 px-5 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg">
+              <span data-i18n="btnProceedToSheets">Daftarlarni tekshirishga o'tish →</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: To'g'ri javoblar Matrix Grid (col-span-7) -->
+        <div class="lg:col-span-7 flex flex-col">
+          <div id="tourStepQuestionsList" class="card-master p-4 md:p-5 bg-white flex flex-col shadow-sm">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <div>
+                <h2 class="font-black text-slate-900 text-sm md:text-base tracking-tight" data-i18n="correctAnswersTitle">To'g'ri javoblar</h2>
+                <p class="text-[11px] text-slate-400 font-medium" data-i18n="correctAnswersSub">Har bir savolning to'g'ri javobini tanlang:</p>
+              </div>
+              <span id="keyProgress" class="text-[11px] font-black px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">0 / 10 belgilandi</span>
+            </div>
+
+            <!-- Responsive 2-column grid on desktop so 30 questions fit into 15 compact rows! -->
+            <div id="questionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 overflow-y-auto max-h-[580px] pr-1.5 custom-scrollbar"></div>
+          </div>
+
+          <!-- Mobile Proceed CTA -->
+          <div id="tourStepProceedBtn" class="lg:hidden pt-3">
+            <button id="btnProceedToCamera" class="btn-primary btn-spring w-full py-4 px-5 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg">
+              <span data-i18n="btnProceedToSheets">Daftarlarni tekshirishga o'tish →</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 2-SAHIFA: DAFTARLARNI YUKLASH ==================== -->
+    <section id="screen2" class="hidden flex-col flex-1 gap-3.5">
+
+      <!-- Navigation & Title -->
+      <div class="flex items-center justify-between">
+        <button id="btnBackToKey" class="btn-spring text-xs font-bold text-slate-600 bg-white px-3 py-2 rounded-xl border border-slate-200 flex items-center gap-1.5 shadow-2xs">
+          <span data-i18n="btnBackToKey">← Kalitni tahrirlash</span>
+        </button>
+        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider" data-i18n="stepSheets">2-qadam: Daftarlar</span>
+      </div>
+
+      <!-- O'qituvchi Buyrug'i / AI Filtr Kartochkasi (Teacher Instruction) -->
+      <div id="testInstructionCard" class="card-master p-4 bg-gradient-to-br from-white via-slate-50/50 to-emerald-50/30 border border-emerald-200/70">
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="testInstructionInput" class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">🎯</span>
+            <span data-i18n="teacherInstructionTitle">O'qituvchi buyrug'i (ixtiyoriy):</span>
+          </label>
+          <span class="text-[9px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">AI Filtr</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-2 font-medium" data-i18n="teacherInstructionSub">Rasmdagi boshqa mashqlarni tekshirib yubormasligi uchun</p>
+        <input type="text" id="testInstructionInput" class="input-field mb-2" placeholder="Masalan: Faqat 2-variantni tekshir yoki 5-mashqni tekshir">
+        
+        <!-- Tezkor Chips -->
+        <div class="flex flex-wrap gap-1.5 mb-1.5">
+          <button type="button" class="btn-instruction-chip btn-spring text-[11px] font-bold px-2.5 py-1 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 border border-slate-200 shadow-2xs" data-target="testInstructionInput" data-val="Faqat 1-variantni tekshir" data-i18n="chipVar1">Faqat 1-variant</button>
+          <button type="button" class="btn-instruction-chip btn-spring text-[11px] font-bold px-2.5 py-1 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 border border-slate-200 shadow-2xs" data-target="testInstructionInput" data-val="Faqat 2-variantni tekshir" data-i18n="chipVar2">Faqat 2-variant</button>
+          <button type="button" class="btn-instruction-chip btn-spring text-[11px] font-bold px-2.5 py-1 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 border border-slate-200 shadow-2xs" data-target="testInstructionInput" data-val="Oxirgi mashqni tekshir" data-i18n="chipLastEx">Oxirgi mashq</button>
+          <button type="button" class="btn-instruction-chip btn-spring text-[11px] font-bold px-2.5 py-1 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 border border-slate-200 shadow-2xs" data-target="testInstructionInput" data-val="Qizil ruchka bilan yozilganini tekshir" data-i18n="chipRedPen">Qizil ruchkalisi</button>
+        </div>
+        <p class="text-[10px] text-slate-400 leading-tight" data-i18n="teacherInstructionTip">💡 Agar daftarda boshqa mashqlar ham yozilgan bo'lsa, AI faqat keraklisini tekshirishi uchun shu yerga yozing.</p>
+      </div>
+
+      <input type="file" id="bulkUpload" multiple accept="image/*" class="hidden">
+      <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" class="hidden">
+
+      <!-- Neumorphic Camera Hub (Boshlang'ich yuklash markazi) -->
+      <div id="initialUploadArea" class="card-master p-6 py-8 flex flex-col items-center justify-center text-center my-auto bg-white">
+        <div class="relative w-36 h-36 flex items-center justify-center mb-5">
+          <!-- Ambient Concentric Ripple Rings -->
+          <div class="absolute inset-0 rounded-full border-2 border-emerald-400/40 ripple-ring-1 pointer-events-none"></div>
+          <div class="absolute inset-2 rounded-full border-2 border-teal-400/30 ripple-ring-2 pointer-events-none"></div>
+
+          <!-- Central Touch Sphere -->
+          <button id="btnTriggerGallery" type="button" class="btn-spring relative z-10 w-28 h-28 rounded-full flex flex-col items-center justify-center text-white shadow-xl" style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); box-shadow: 0 12px 36px -4px rgba(16, 185, 129, 0.5)">
+            <svg class="w-10 h-10 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span class="text-[11px] font-black tracking-wider uppercase" data-i18n="btnUploadBig">YUKLASH</span>
+          </button>
+        </div>
+
+        <h3 class="text-lg font-black text-slate-900 mb-1" data-i18n="uploadTitle">Daftarlarni yuklang</h3>
+        <p class="text-xs text-slate-500 max-w-xs leading-relaxed mb-5" data-i18n="uploadDesc">
+          Bitta yoki bir vaqtda butun sinf daftarlarini (10–30 ta) tanlashingiz mumkin
+        </p>
+
+        <!-- Quick Dual Action Buttons -->
+        <div class="flex items-center gap-2.5 w-full max-w-xs">
+          <button id="btnTriggerCamera" type="button" class="btn-spring flex-1 py-3 px-3 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs">
+            <span data-i18n="btnCamera">📷 Kamera</span>
+          </button>
+          <button type="button" onclick="document.getElementById('bulkUpload').click()" class="btn-spring flex-1 py-3 px-3 rounded-2xl bg-white text-slate-700 border border-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs hover:bg-slate-50">
+            <span data-i18n="btnGallery">🖼️ Galereyadan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tanlangan fayllar karuseli -->
+      <div id="selectedFilesCard" class="hidden card-master p-4.5 bg-white">
+        <div class="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">✓</div>
+            <span id="selectedCountText" class="font-black text-slate-800 text-sm">1 ta rasm tanlandi</span>
+          </div>
+          <button id="btnClearAllFiles" type="button" class="text-xs text-rose-500 hover:text-rose-700 font-bold transition-colors" data-i18n="btnClearAll">Tozalash 🗑️</button>
+        </div>
+
+        <p class="text-[11px] text-slate-400 mb-2 font-semibold" data-i18n="selectedSheetsLabel">Tanlangan javob varaqlari:</p>
+        <div id="previewThumbnails" class="flex gap-2 overflow-x-auto pb-1.5 mb-3.5 no-scrollbar"></div>
+
+        <div class="space-y-2">
+          <button id="btnStartBatchCheck" class="btn-primary btn-spring w-full py-4 px-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg">
+            <span>Hammasini tekshirish (1 ta) 🚀</span>
+          </button>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btnAddMoreCamera" type="button" class="btn-spring py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5">
+              <span data-i18n="btnAddMoreCamera">📷 Yana rasm</span>
+            </button>
+            <button id="btnAddMoreFiles" type="button" class="btn-spring py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5">
+              <span data-i18n="btnAddMoreGallery">🖼️ Yana fayl</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3-SAHIFA: ELEKTRON JURNAL & NATIJALAR ==================== -->
+    <section id="screen3" class="hidden flex-col flex-1 gap-3.5">
+
+      <!-- Bento Header: Sinf ko'rsatkichlari -->
+      <div class="card-master p-5 text-white bg-gradient-to-br from-emerald-600 via-teal-700 to-teal-800 shadow-xl border-none">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-full backdrop-blur-md" data-i18n="resultsComplete">✅ Tekshiruv yakunlandi</span>
+          <span id="batchTotalCount" class="text-xs font-bold text-emerald-100">Jami: 0 ta</span>
+        </div>
+        <h2 id="batchAvgScore" class="text-3xl font-black tracking-tight my-1.5">O'rtacha: 0%</h2>
+        <div id="gradeStatsBadges" class="flex flex-wrap gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/20"></div>
+      </div>
+
+      <!-- Search & Grade Filter Bar (Senior Gradebook Feature!) -->
+      <div class="card-master p-3 bg-white space-y-2">
+        <div class="relative">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" id="studentSearchInput" class="input-field pl-9" placeholder="🔍 O'quvchini qidirish..." data-i18n="searchStudentPlaceholder">
+        </div>
+        <!-- Grade Filter Chips -->
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
+          <button type="button" class="btn-grade-filter btn-spring text-[10px] font-bold px-2.5 py-1 rounded-xl bg-slate-800 text-white shadow-2xs" data-filter="all" data-i18n="filterAll">Barchasi</button>
+          <button type="button" class="btn-grade-filter btn-spring text-[10px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-800" data-filter="5" data-i18n="filter5">5 baho</button>
+          <button type="button" class="btn-grade-filter btn-spring text-[10px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 hover:bg-teal-50 hover:text-teal-800" data-filter="4" data-i18n="filter4">4 baho</button>
+          <button type="button" class="btn-grade-filter btn-spring text-[10px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 hover:bg-amber-50 hover:text-amber-800" data-filter="3" data-i18n="filter3">3 baho</button>
+          <button type="button" class="btn-grade-filter btn-spring text-[10px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 hover:bg-rose-50 hover:text-rose-800" data-filter="2" data-i18n="filter2">2 baho</button>
+        </div>
+      </div>
+
+      <!-- Jadval (Elektron Jurnal) -->
+      <div class="card-master overflow-hidden flex-1 flex flex-col bg-white">
+        <div class="px-4 py-3 flex items-center justify-between bg-slate-50/80 border-b border-slate-100">
+          <span class="text-xs font-black text-slate-800" data-i18n="tableCardTitle">📊 Daftarlar ro'yxati</span>
+          <span class="text-[10px] text-slate-400 font-medium" data-i18n="tableCardSub">Batafsil uchun bosing</span>
+        </div>
+        <div class="overflow-y-auto flex-1 max-h-64">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="text-[10px] text-slate-400 font-bold uppercase tracking-wider sticky top-0 bg-white border-b border-slate-100">
+              <tr>
+                <th class="py-2.5 px-3" data-i18n="thStudent">O'quvchi</th>
+                <th class="py-2.5 px-2 text-emerald-600">✓</th>
+                <th class="py-2.5 px-2 text-rose-500">✕</th>
+                <th class="py-2.5 px-2" data-i18n="thScore">Ball</th>
+                <th class="py-2.5 px-2" data-i18n="thMark">Baho</th>
+                <th class="py-2.5 px-2 text-center" data-i18n="thAction">Amal</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="space-y-2">
+        <button id="btnExportCsv" class="btn-spring w-full py-3.5 px-4 rounded-2xl bg-white border-2 border-emerald-300 text-emerald-800 font-bold text-xs flex items-center justify-center gap-2 shadow-xs hover:bg-emerald-50/50">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span data-i18n="btnExportCsv">Excel (CSV) ko'rinishida yuklab olish</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btnNextStudent" class="btn-primary btn-spring py-3 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-md">
+            <span data-i18n="btnNextStudent">Yana tekshirish 📸</span>
+          </button>
+          <button id="btnResetAll" class="btn-spring py-3 px-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all">
+            <span data-i18n="btnResetAll">Yangi test 🔄</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== INSHO BO'LIMI ==================== -->
+    <section id="essaySection" class="hidden flex-col flex-1 gap-3.5">
+      <div id="essayInputCard" class="card-master p-5 bg-white">
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-lg shadow-md" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">📝</div>
+          <div>
+            <h2 class="font-black text-slate-900 text-sm tracking-tight" data-i18n="essayCardTitle">Insho / Bayon / Diktant</h2>
+            <p class="text-[11px] text-slate-400 font-medium" data-i18n="essayCardSub">O'quvchi daftaridan AI tahlil</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 mb-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-800 mb-1" data-i18n="essayTopicLabel">Mavzu yoki sarlavha (ixtiyoriy):</label>
+            <input type="text" id="essayTopicInput" class="input-field" placeholder="Masalan: Vatanim — mening faxrim...">
+          </div>
+
+          <!-- O'qituvchi buyrug'i -->
+          <div>
+            <label class="block text-xs font-bold text-slate-800 mb-1" data-i18n="teacherInstructionTitle">🎯 O'qituvchi buyrug'i (ixtiyoriy):</label>
+            <input type="text" id="essayInstructionInput" class="input-field mb-1.5" placeholder="Masalan: Pastdagi diktantni tekshir, yuqoridagi darsga tegma">
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="btn-instruction-chip btn-spring text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-indigo-100 hover:text-indigo-800 text-slate-600 border border-slate-200" data-target="essayInstructionInput" data-val="Sahifaning pastki qismidagi diktantni tekshir" data-i18n="chipBottomDictation">Pastdagi diktant</button>
+              <button type="button" class="btn-instruction-chip btn-spring text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-indigo-100 hover:text-indigo-800 text-slate-600 border border-slate-200" data-target="essayInstructionInput" data-val="Faqat insho qismini tekshir" data-i18n="chipEssayOnly">Faqat insho qismi</button>
+            </div>
+          </div>
+        </div>
+
+        <input type="file" id="essayCameraInput" accept="image/*" capture="environment" class="hidden">
+        <input type="file" id="essayGalleryInput" accept="image/*" class="hidden">
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="btnEssayCamera" class="btn-spring text-white py-3.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-md" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">
+            <span data-i18n="btnEssayCamera">📷 Rasmga olish</span>
+          </button>
+          <button type="button" id="btnEssayGallery" class="btn-spring py-3.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 bg-white border border-indigo-200 text-indigo-800 shadow-xs hover:bg-indigo-50/50">
+            <span data-i18n="btnEssayGallery">🖼️ Galereyadan</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="essayResultCard" class="hidden flex-col space-y-3 pb-2">
+        <div class="card-master p-4 flex items-center justify-between bg-white">
+          <div>
+            <span id="essayStudentName" class="font-black text-slate-900 text-sm block">O'quvchi ismi</span>
+            <span id="essayTopicDisplay" class="text-[11px] text-slate-400 italic block mt-0.5">Mavzu</span>
+            <span id="essayWordCount" class="text-[10px] text-emerald-600 font-bold mt-0.5 inline-block">0 ta so'z</span>
+          </div>
+          <div class="text-right">
+            <div id="essayMarkBadge" class="text-lg font-black bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl shadow-xs inline-block">5 baho</div>
+            <span id="essayScorePercent" class="text-[11px] font-bold text-slate-400 block mt-1">88%</span>
+          </div>
+        </div>
+
+        <div class="card-master p-3.5 bg-white">
+          <h3 class="font-bold text-xs text-slate-700 mb-3" data-i18n="essayCriteriaTitle">Baholash mezonlari:</h3>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="rounded-2xl p-2.5 bg-emerald-50/80 border border-emerald-200">
+              <span class="text-[10px] text-slate-400 block font-medium mb-0.5" data-i18n="critContent">Mavzu</span>
+              <span id="scoreContent" class="font-black text-emerald-700 text-sm">-</span>
+            </div>
+            <div class="rounded-2xl p-2.5 bg-blue-50/80 border border-blue-200">
+              <span class="text-[10px] text-slate-400 block font-medium mb-0.5" data-i18n="critGrammar">Grammatika</span>
+              <span id="scoreGrammar" class="font-black text-blue-700 text-sm">-</span>
+            </div>
+            <div class="rounded-2xl p-2.5 bg-purple-50/80 border border-purple-200">
+              <span class="text-[10px] text-slate-400 block font-medium mb-0.5" data-i18n="critLogic">Mantiq</span>
+              <span id="scoreLogic" class="font-black text-violet-700 text-sm">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-master p-3.5 bg-white">
+          <div class="flex items-center justify-between mb-2.5">
+            <h3 class="font-bold text-xs text-slate-700" data-i18n="essayErrorsTitle">Imlo va xatolar</h3>
+            <span id="essayErrorsCount" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800">0 ta xato</span>
+          </div>
+          <div id="essayErrorsList" class="space-y-1.5 max-h-40 overflow-y-auto text-xs"></div>
+        </div>
+
+        <div class="rounded-2xl p-4 bg-gradient-to-br from-indigo-50/80 via-purple-50/50 to-white border border-indigo-200/80">
+          <span class="font-bold text-indigo-950 text-xs flex items-center gap-1.5 mb-1.5" data-i18n="essayFeedbackTitle">💡 O'qituvchi xulosasi:</span>
+          <p id="essayTeacherFeedback" class="text-xs text-indigo-950 leading-relaxed">-</p>
+        </div>
+
+        <details class="card-master p-3 text-xs bg-white">
+          <summary class="font-bold text-slate-700 cursor-pointer select-none" data-i18n="essayTransSummary">📄 Daftardan o'qilgan matn</summary>
+          <p id="essayTranscription" class="mt-2 text-slate-600 text-[11px] leading-relaxed whitespace-pre-wrap bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono"></p>
+        </details>
+
+        <button type="button" id="btnNextEssay" class="btn-spring w-full text-white font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">
+          <span data-i18n="btnNextEssay">Keyingi inshoni tekshirish 📝</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== MATEMATIKA BO'LIMI ==================== -->
+    <section id="mathSection" class="hidden flex-col flex-1 gap-3.5">
+      <div id="mathInputCard" class="card-master p-5 bg-white">
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-lg shadow-md" style="background: linear-gradient(135deg, #0d9488, #0891b2)">🔢</div>
+          <div>
+            <h2 class="font-black text-slate-900 text-sm tracking-tight" data-i18n="mathCardTitle">Matematika va Aniq fanlar</h2>
+            <p class="text-[11px] text-slate-400 font-medium" data-i18n="mathCardSub">Misol va masalalarni bosqichma-bosqich</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 mb-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-800 mb-1" data-i18n="mathPromptLabel">Masala sharti yoki o'qituvchi buyrug'i:</label>
+            <input type="text" id="mathTaskPrompt" class="input-field mb-1.5" placeholder="Masalan: 2x + 5 = 15 yoki Faqat 1-misolni tekshir">
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="btn-instruction-chip btn-spring text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-teal-100 hover:text-teal-800 text-slate-600 border border-slate-200" data-target="mathTaskPrompt" data-val="Faqat 1-misolni tekshir" data-i18n="chipMathEx1">Faqat 1-misol</button>
+              <button type="button" class="btn-instruction-chip btn-spring text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-teal-100 hover:text-teal-800 text-slate-600 border border-slate-200" data-target="mathTaskPrompt" data-val="Oxirgi tenglamani tekshir" data-i18n="chipMathExLast">Oxirgi tenglama</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-800 mb-1" data-i18n="mathAnswerLabel">Kutilgan javob (ixtiyoriy):</label>
+            <input type="text" id="mathExpectedAnswer" class="input-field" placeholder="Masalan: x = 5">
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium" data-i18n="mathTip">💡 Kiritmasa ham AI o'zi hisoblab aniqlaydi</p>
+        </div>
+
+        <input type="file" id="mathCameraInput" accept="image/*" capture="environment" class="hidden">
+        <input type="file" id="mathGalleryInput" accept="image/*" multiple class="hidden">
+
+        <div id="mathInitialUploadArea" class="grid grid-cols-2 gap-2">
+          <button type="button" id="btnMathCamera" class="btn-spring text-white py-3.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-md" style="background: linear-gradient(135deg, #0d9488, #0891b2)">
+            <span data-i18n="btnMathCameraSingle">📷 Bitta rasm</span>
+          </button>
+          <button type="button" id="btnMathGallery" class="btn-spring py-3.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 bg-white border border-teal-300 text-teal-800 shadow-xs hover:bg-teal-50/50">
+            <span data-i18n="btnMathGalleryBatch">🖼️ Ko'p daftar</span>
+          </button>
+        </div>
+
+        <div id="mathSelectedFilesCard" class="hidden mt-3.5 pt-3.5 border-t border-slate-100 flex-col space-y-3">
+          <div class="flex items-center justify-between">
+            <span id="mathSelectedCountText" class="text-xs font-black text-slate-800">0 ta daftar</span>
+            <button type="button" id="btnClearAllMathFiles" class="text-[11px] text-rose-500 hover:text-rose-700 font-bold" data-i18n="btnClearAll">Hammasini tozalash 🗑️</button>
+          </div>
+          <div id="mathPreviewThumbnails" class="flex gap-2 overflow-x-auto pb-1.5 no-scrollbar"></div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button type="button" id="btnAddMoreMathCamera" class="btn-spring py-2.5 px-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 font-bold flex items-center justify-center gap-1">
+              <span data-i18n="btnAddMoreCamera">📷 + Rasm</span>
+            </button>
+            <button type="button" id="btnAddMoreMathGallery" class="btn-spring py-2.5 px-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 font-bold flex items-center justify-center gap-1">
+              <span data-i18n="btnAddMoreGallery">🖼️ + Galereya</span>
+            </button>
+          </div>
+          <button type="button" id="btnStartMathBatchCheck" class="btn-spring w-full text-white font-black py-4 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg" style="background: linear-gradient(135deg, #0d9488, #0891b2)">
+            <span>Tekshirishni boshlash 🚀</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Yagona natija -->
+      <div id="mathResultCard" class="hidden flex-col space-y-3 pb-2">
+        <div class="card-master p-4 flex items-center justify-between bg-white">
+          <div>
+            <span id="mathStudentName" class="font-black text-slate-900 text-sm block">O'quvchi</span>
+            <span id="mathProblemDisplay" class="text-[11px] text-slate-400 italic block mt-0.5">Masala</span>
+            <div id="mathAnswerStatusBadge" class="mt-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full inline-block bg-emerald-100 text-emerald-800">To'g'ri ✅</div>
+          </div>
+          <div class="text-right">
+            <div id="mathMarkBadge" class="text-lg font-black bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl shadow-xs inline-block">5 baho</div>
+            <span id="mathScorePercent" class="text-[11px] font-bold text-slate-400 block mt-1">90%</span>
+          </div>
+        </div>
+        <div class="card-master p-3.5 grid grid-cols-2 gap-2 text-xs bg-white">
+          <div class="rounded-2xl p-2.5 bg-slate-50 border border-slate-200">
+            <span class="text-[10px] text-slate-400 block font-medium" data-i18n="studentAnswerLabel">O'quvchi javobi:</span>
+            <span id="mathStudentAnswer" class="font-black text-slate-900 font-mono">-</span>
+          </div>
+          <div class="rounded-2xl p-2.5 bg-teal-50/80 border border-teal-200">
+            <span class="text-[10px] text-slate-400 block font-medium" data-i18n="expectedAnswerLabel">To'g'ri javob:</span>
+            <span id="mathCorrectAnswer" class="font-black text-teal-800 font-mono">-</span>
+          </div>
+        </div>
+        <div class="card-master p-3.5 bg-white">
+          <h3 class="font-bold text-xs text-slate-700 mb-2 flex items-center gap-1.5" data-i18n="mathStepsTitle">📐 Yechish bosqichlari:</h3>
+          <div id="mathStepsList" class="space-y-2 max-h-52 overflow-y-auto text-xs"></div>
+        </div>
+        <div class="rounded-2xl p-4 bg-gradient-to-br from-teal-50/80 via-emerald-50/50 to-white border border-teal-200/80">
+          <span class="font-bold text-teal-950 text-xs flex items-center gap-1.5 mb-1.5" data-i18n="mathFeedbackTitle">💡 O'qituvchi xulosasi:</span>
+          <p id="mathTeacherFeedback" class="text-xs text-teal-950 leading-relaxed">-</p>
+        </div>
+        <button type="button" id="btnNextMath" class="btn-spring w-full text-white font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md" style="background: linear-gradient(135deg, #0d9488, #0891b2)">
+          <span data-i18n="btnNextMathSingle">Keyingi misolni tekshirish 🔢</span>
+        </button>
+      </div>
+
+      <!-- Batch natija -->
+      <div id="mathBatchResultCard" class="hidden flex-col space-y-3.5 pb-4">
+        <div class="card-master p-5 text-white bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800 shadow-xl border-none">
+          <div class="flex items-center justify-between mb-1">
+            <h2 class="font-bold text-sm" data-i18n="mathBatchTitle">Sinf natijalari — Matematika</h2>
+            <span id="mathBatchTotalCount" class="text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-medium">Jami: 0 ta</span>
+          </div>
+          <span id="mathBatchAvgScore" class="text-3xl font-black block my-1">O'rtacha: 0%</span>
+          <div id="mathGradeStatsBadges" class="flex flex-wrap gap-1.5 text-[10px] font-bold pt-2 border-t border-white/20"></div>
+        </div>
+        <div class="card-master overflow-hidden bg-white">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-teal-50/80 border-b border-teal-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                  <th class="py-2.5 px-3" data-i18n="thStudent">O'quvchi</th>
+                  <th class="py-2.5 px-2" data-i18n="thMathResult">Natija</th>
+                  <th class="py-2.5 px-2" data-i18n="thScore">Ball</th>
+                  <th class="py-2.5 px-2" data-i18n="thMark">Baho</th>
+                  <th class="py-2.5 px-2 text-center" data-i18n="thAction">Amal</th>
+                </tr>
+              </thead>
+              <tbody id="mathResultsTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="btnExportMathCsv" class="btn-spring bg-white border-2 border-teal-300 text-teal-800 font-bold py-3.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-xs">
+            <span data-i18n="btnExportMathCsv">📥 Excel (CSV)</span>
+          </button>
+          <button type="button" id="btnNextMathBatch" class="btn-spring text-white font-bold py-3.5 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md" style="background: linear-gradient(135deg, #0d9488, #0891b2)">
+            <span data-i18n="btnNextMathBatch">Yangi daftarlar 🔄</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== LOADING MODAL ==================== -->
+  <div id="loadingOverlay" class="modal-overlay fixed inset-0 z-50 hidden flex-col items-center justify-center p-6 text-center">
+    <div class="glass-panel rounded-3xl p-8 max-w-xs w-full flex flex-col items-center shadow-2xl border border-white">
+      <div class="relative w-16 h-16 flex items-center justify-center mb-4">
+        <div class="absolute inset-0 rounded-full border-4 border-emerald-100 animate-ping opacity-40"></div>
+        <div class="w-14 h-14 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin"></div>
+      </div>
+      <h3 id="progressTitle" class="font-black text-slate-900 text-base mb-1" data-i18n="loadingTitle">Tahlil qilinmoqda...</h3>
+      <p id="progressCounter" class="text-sm font-black text-emerald-600 mb-3">0 / 0 ta</p>
+      <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden mb-2 border border-slate-200">
+        <div id="progressBar" class="progress-bar-inner h-full rounded-full" style="width:0%"></div>
+      </div>
+      <p id="progressStatus" class="text-[11px] text-slate-400 font-semibold" data-i18n="loadingWait">Iltimos, kuting...</p>
+    </div>
+  </div>
+
+  <!-- ==================== TIL TANLASH MODALI ==================== -->
+  <div id="languageModal" class="modal-overlay fixed inset-0 z-50 hidden flex-col items-center justify-center p-4">
+    <div class="glass-panel rounded-3xl max-w-sm w-full p-6 shadow-2xl flex flex-col space-y-4 border border-white">
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-3xl shadow-md" style="background: linear-gradient(135deg, #059669, #0d9488); color:white">🌐</div>
+        <h3 class="text-lg font-black text-slate-900" data-i18n="langModalTitle">Tilni tanlang / Тилни танланг</h3>
+        <p class="text-xs text-slate-500 mt-1" data-i18n="langModalSub">Dasturdan qaysi tilda foydalanmoqchisiz?</p>
+      </div>
+
+      <div class="space-y-2.5 pt-1">
+        <div class="lang-card" data-lang="uz">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇺🇿</span>
+            <div>
+              <span class="font-black text-sm text-slate-900 block">O'zbekcha</span>
+              <span class="text-[11px] text-slate-400 font-medium">Lotin yozuvida</span>
+            </div>
+          </div>
+          <span class="text-emerald-600 font-bold text-lg check-icon">✓</span>
+        </div>
+
+        <div class="lang-card" data-lang="uz_cyrl">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇺🇿</span>
+            <div>
+              <span class="font-black text-sm text-slate-900 block">Ўзбекча</span>
+              <span class="text-[11px] text-slate-400 font-medium">Кирилл ёзувида</span>
+            </div>
+          </div>
+          <span class="text-emerald-600 font-bold text-lg check-icon hidden">✓</span>
+        </div>
+
+        <div class="lang-card" data-lang="ru">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇷🇺</span>
+            <div>
+              <span class="font-black text-sm text-slate-900 block">Русский</span>
+              <span class="text-[11px] text-slate-400 font-medium">На русском языке</span>
+            </div>
+          </div>
+          <span class="text-emerald-600 font-bold text-lg check-icon hidden">✓</span>
+        </div>
+      </div>
+
+      <button type="button" id="btnConfirmLanguage" class="btn-primary btn-spring w-full py-3.5 px-4 rounded-2xl text-white font-black text-xs shadow-md">
+        <span data-i18n="btnConfirmLang">Tanlash va davom etish ➜</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== INTERAKTIV SPOTLIGHT TOUR ==================== -->
+  <div id="tourOverlay" class="fixed inset-0 z-[60] hidden pointer-events-none">
+    <div id="tourBackdrop" class="fixed inset-0 bg-slate-950/75 backdrop-blur-[3px] pointer-events-auto transition-opacity duration-300"></div>
+
+    <div id="tourSpotlightBox" class="fixed z-[61] rounded-3xl ring-4 ring-emerald-400 shadow-[0_0_0_9999px_rgba(15,23,42,0.78)] transition-all duration-300 pointer-events-none" style="display:none">
+      <div class="absolute inset-0 rounded-3xl animate-pulse ring-2 ring-emerald-300"></div>
+    </div>
+
+    <div id="tourTooltip" class="fixed z-[62] w-[92%] max-w-sm pointer-events-auto bg-white rounded-3xl p-5 shadow-2xl border border-emerald-100 transition-all duration-300" style="display:none">
+      <div class="flex items-center justify-between mb-2">
+        <span id="tourStepBadge" class="text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">1 / 7-qadam</span>
+        <button type="button" id="btnTourSkip" class="text-xs text-slate-400 hover:text-slate-600 font-bold px-2 py-1 rounded-lg">✕ O'tkazib yuborish</button>
+      </div>
+      <h4 id="tourStepTitle" class="text-sm font-black text-slate-900 mb-1.5 leading-snug">3 xil tekshirish yo'nalishi</h4>
+      <p id="tourStepDesc" class="text-xs text-slate-600 leading-relaxed mb-2.5"></p>
+      <div id="tourStepHint" class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-100 text-[11px] text-emerald-950 font-medium mb-3.5 flex items-center gap-1.5">
+        <span class="text-sm">💡</span><span id="tourStepHintText"></span>
+      </div>
+      <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
+        <button type="button" id="btnTourPrev" class="hidden py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs btn-spring">Orqaga</button>
+        <button type="button" id="btnTourNext" class="btn-primary btn-spring flex-1 py-2.5 px-4 rounded-xl text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+          <span id="tourNextBtnText">Keyingisi ➜</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODALLAR ==================== -->
+  <!-- DAFTAR TAFSILOTI MODALI -->
+  <div id="detailsModal" class="modal-overlay fixed inset-0 z-50 hidden flex-col items-center justify-center p-4">
+    <div class="card-master bg-white rounded-3xl max-w-sm w-full max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 flex items-center justify-between bg-gradient-to-r from-emerald-50/80 to-teal-50/50 border-b border-emerald-100">
+        <h3 id="modalSheetTitle" class="font-black text-slate-900 text-sm" data-i18n="detailsModalTitle">Daftar tafsiloti</h3>
+        <button id="btnCloseModal" class="w-8 h-8 rounded-full bg-white hover:bg-slate-100 text-slate-500 font-bold flex items-center justify-center shadow-2xs">✕</button>
+      </div>
+      <div id="modalQuestionsList" class="p-4 overflow-y-auto space-y-2 flex-1 text-xs"></div>
+      <div class="p-3.5 border-t border-slate-100">
+        <button id="btnModalCloseBottom" class="btn-spring w-full py-2.5 rounded-xl text-slate-700 font-bold text-xs bg-slate-100 hover:bg-slate-200" data-i18n="btnClose">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATEMATIKA TAFSILOTI MODALI -->
+  <div id="mathDetailsModal" class="modal-overlay fixed inset-0 z-50 hidden flex-col items-center justify-center p-4">
+    <div class="card-master bg-white rounded-3xl max-w-sm w-full max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 flex items-center justify-between bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-teal-100">
+        <div>
+          <h3 id="modalMathStudentTitle" class="font-black text-teal-950 text-sm">Daftar tahlili</h3>
+          <span id="modalMathProblemSub" class="text-[10px] text-teal-600 block truncate max-w-[220px] mt-0.5">Masala</span>
+        </div>
+        <button id="btnCloseMathModal" class="w-8 h-8 rounded-full bg-white hover:bg-teal-50 text-teal-700 font-bold flex items-center justify-center shadow-2xs">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
+        <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-medium" data-i18n="expectedAnswerLabel">Yakuniy javob:</span>
+            <span id="modalMathStatusBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full inline-block mt-0.5 bg-emerald-100 text-emerald-800">To'g'ri ✅</span>
+          </div>
+          <div class="text-right">
+            <span id="modalMathMarkBadge" class="text-sm font-black px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 inline-block">5 baho</span>
+            <span id="modalMathScorePercent" class="text-[10px] text-slate-400 block mt-0.5 font-bold">0%</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="rounded-2xl p-2.5 bg-slate-50 border border-slate-200">
+            <span class="text-[10px] text-slate-400 block font-medium" data-i18n="studentAnswerLabel">O'quvchi javobi:</span>
+            <span id="modalMathStudentAnswer" class="font-bold text-slate-900 font-mono">-</span>
+          </div>
+          <div class="rounded-2xl p-2.5 bg-teal-50/80 border border-teal-200">
+            <span class="text-[10px] text-slate-400 block font-medium" data-i18n="expectedAnswerLabel">To'g'ri javob:</span>
+            <span id="modalMathCorrectAnswer" class="font-bold text-teal-800 font-mono">-</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-700 text-xs mb-1.5" data-i18n="mathStepsTitle">📐 Yechish bosqichlari:</h4>
+          <div id="modalMathStepsList" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+        </div>
+        <div class="rounded-2xl p-3.5 bg-teal-50/80 border border-teal-200">
+          <span class="font-bold text-teal-950 text-[11px] block mb-0.5" data-i18n="mathFeedbackTitle">💡 AI xulosasi:</span>
+          <p id="modalMathFeedback" class="text-[11px] text-teal-950 leading-relaxed"></p>
+        </div>
+      </div>
+      <div class="p-3.5 border-t border-slate-100">
+        <button id="btnModalMathCloseBottom" class="btn-spring w-full py-2.5 rounded-xl text-slate-700 font-bold text-xs bg-slate-100 hover:bg-slate-200" data-i18n="btnClose">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATN KALIT MODALI -->
+  <div id="textKeyModal" class="modal-overlay fixed inset-0 z-50 hidden flex-col items-center justify-center p-4">
+    <div class="card-master bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 flex items-center justify-between bg-slate-50 border-b border-slate-100">
+        <h3 class="font-black text-slate-900 text-sm" data-i18n="textKeyModalTitle">📋 Matndan kalit yuklash</h3>
+        <button id="btnCloseTextKeyModal" class="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center shadow-2xs">✕</button>
+      </div>
+      <div class="p-5 space-y-3">
+        <p class="text-xs text-slate-600 leading-relaxed" data-i18n="textKeyModalDesc">To'g'ri javoblarni matn shaklida kiriting:</p>
+        <textarea id="textKeyInput" rows="4" class="w-full text-xs font-mono p-3.5 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase bg-slate-50 transition-all resize-none" placeholder="Masalan: ABCDACBDA yoki&#10;1-A, 2-B, 3-C, 4-D..."></textarea>
+        <p class="text-[11px] text-slate-400" data-i18n="textKeyFormats">💡 Qo'llab-quvvatlanadi: <b>ABCD...</b> yoki <b>1-A, 2-B, 3-C</b></p>
+      </div>
+      <div class="p-3.5 border-t border-slate-100 grid grid-cols-2 gap-2">
+        <button type="button" id="btnCancelTextKey" class="btn-spring w-full py-2.5 rounded-xl text-slate-700 font-bold text-xs bg-slate-100 hover:bg-slate-200" data-i18n="btnCancel">Bekor qilish</button>
+        <button type="button" id="btnApplyTextKey" class="btn-primary btn-spring w-full py-2.5 rounded-xl text-white font-bold text-xs" data-i18n="btnApply">Qo'llash ✅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAHRIRLASH MODALI -->
+  <div id="editResultModal" class="modal-overlay fixed inset-0 z-50 hidden flex-col items-center justify-center p-4">
+    <div class="card-master bg-white rounded-3xl max-w-sm w-full overflow-hidden flex flex-col shadow-2xl">
+      <div class="px-5 py-4 flex items-center justify-between bg-slate-50 border-b border-slate-100">
+        <h3 class="font-black text-slate-900 text-sm" data-i18n="editModalTitle">✏️ Natijani tahrirlash</h3>
+        <button type="button" id="btnCloseEditModal" class="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center shadow-2xs">✕</button>
+      </div>
+      <div class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-800 mb-1.5" data-i18n="editStudentNameLabel">O'quvchi F.I.Sh:</label>
+          <input type="text" id="editStudentName" class="input-field" placeholder="Ism familiya">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-800 mb-2" data-i18n="editMarkLabel">Baho:</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button type="button" data-mark="5" class="btn-edit-mark btn-spring py-3 rounded-2xl font-black border border-slate-200 text-slate-700 bg-white hover:border-emerald-400 hover:text-emerald-700 shadow-2xs text-sm">5</button>
+            <button type="button" data-mark="4" class="btn-edit-mark btn-spring py-3 rounded-2xl font-black border border-slate-200 text-slate-700 bg-white hover:border-teal-400 hover:text-teal-700 shadow-2xs text-sm">4</button>
+            <button type="button" data-mark="3" class="btn-edit-mark btn-spring py-3 rounded-2xl font-black border border-slate-200 text-slate-700 bg-white hover:border-amber-400 hover:text-amber-700 shadow-2xs text-sm">3</button>
+            <button type="button" data-mark="2" class="btn-edit-mark btn-spring py-3 rounded-2xl font-black border border-slate-200 text-slate-700 bg-white hover:border-rose-400 hover:text-rose-700 shadow-2xs text-sm">2</button>
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-800 mb-1.5" data-i18n="editScorePercentLabel">Ball foizi (%):</label>
+          <input type="number" id="editScorePercent" min="0" max="100" class="input-field" placeholder="Masalan: 85">
+        </div>
+      </div>
+      <div class="p-3.5 border-t border-slate-100 grid grid-cols-2 gap-2">
+        <button type="button" id="btnCancelEdit" class="btn-spring w-full py-2.5 rounded-xl text-slate-700 font-bold text-xs bg-slate-100 hover:bg-slate-200" data-i18n="btnCancel">Bekor qilish</button>
+        <button type="button" id="btnSaveEdit" class="btn-primary btn-spring w-full py-2.5 rounded-xl text-white font-bold text-xs" data-i18n="btnSave">Saqlash ✅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/i18n.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

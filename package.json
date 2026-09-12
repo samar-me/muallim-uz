@@ -1,0 +1,29 @@
+{
+  "name": "muallim-uz",
+  "version": "1.0.0",
+  "description": "Muallim.uz — O'qituvchilar uchun test javoblarini tekshiruvchi AI Telegram Mini App",
+  "main": "src/bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node test/test_grader.js && node test/test_vision_parsing.js"
+  },
+  "keywords": [
+    "telegram-bot",
+    "ai",
+    "vision",
+    "grading",
+    "education"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "multer": "^2.3.0",
+    "telegraf": "^4.16.3"
+  }
+}
