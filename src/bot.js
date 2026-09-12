@@ -13,6 +13,7 @@ if (!token || token === 'your_telegram_bot_token_here') {
 }
 
 const bot = new Telegraf(token);
+const webAppUrl = process.env.WEBAPP_URL || 'https://muallim-uz-one.vercel.app';
 
 // Xatoliklarni global ushlash
 bot.catch((err, ctx) => {
@@ -24,22 +25,74 @@ bot.catch((err, ctx) => {
   }
 });
 
-// /start komandasi
-bot.start((ctx) => {
+// /start komandasi (Mini App va Bot buyruqlari)
+bot.start(async (ctx) => {
   const userId = ctx.from.id;
   clearSession(userId);
 
+  // Pastki doimiy "Menu Button"ni Mini App ga o'rnatish
+  try {
+    if (webAppUrl.startsWith('https://')) {
+      await ctx.telegram.setChatMenuButton({
+        chat_id: ctx.chat.id,
+        menu_button: {
+          type: 'web_app',
+          text: '🚀 Muallim AI',
+          web_app: { url: webAppUrl },
+        },
+      });
+    }
+  } catch (e) {
+    // Menu button qo'yishda muammo bo'lsa xabar berish shart emas
+  }
+
   const welcomeMessage =
     `👋 <b>Assalomu alaykum, ${ctx.from.first_name || "Hurmatli O'qituvchi"}!</b>\n\n` +
-    `🤖 <b>"Muallim.uz"</b> botiga xush kelibsiz!\n\n` +
-    `Men o'quvchilarning test javoblari varaqasini sun'iy intellekt (Vision AI) yordamida ` +
-    `avtomatik tekshirib beraman.\n\n` +
-    `<b>Boshlash uchun:</b>\n` +
-    `1️⃣ /new_test buyrug'ini bosing va to'g'ri javoblar kalitini kiriting;\n` +
-    `2️⃣ O'quvchining javoblar varaqasi rasmini yuboring;\n` +
-    `3️⃣ Bir necha soniyada batafsil natija va xatolar hisobotini oling!`;
+    `🤖 <b>"Muallim.uz"</b> — Sun'iy intellekt (Vision AI) asosidagi aqlli o'qituvchi yordamchisiga xush kelibsiz!\n\n` +
+    `💡 <b>Sizda 2 xil qulay usul bor:</b>\n` +
+    `1️⃣ <b>Mini App orqali (Tavsiya etiladi):</b> Pastdagi tugma orqali ilovani to'g'ridan-to'g'ri Telegram ichida ochib, ` +
+    `bir vaqtda butun sinf daftarlarini (10-30 ta) tekshiring, Excel yuklang yoki natijalarni Telegramga yuboring!\n\n` +
+    `2️⃣ <b>Oddiy Bot chatida:</b> /new_test buyrug'i orqali kalit kiritib, daftarlar rasmini bittalab shu chatga yuboring.`;
 
-  ctx.reply(welcomeMessage, { parse_mode: 'HTML' });
+  const inlineKeyboard = [];
+  if (webAppUrl.startsWith('https://')) {
+    inlineKeyboard.push([
+      {
+        text: "🚀 Muallim AI Mini App (Ochish)",
+        web_app: { url: webAppUrl },
+      },
+    ]);
+  }
+  inlineKeyboard.push([
+    {
+      text: "📝 Chatda tekshirish (/new_test)",
+      callback_data: "cmd_new_test",
+    },
+  ]);
+
+  await ctx.reply(welcomeMessage, {
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: inlineKeyboard,
+    },
+  });
+});
+
+// Inline tugma bosilganda /new_test chaqirish
+bot.action('cmd_new_test', (ctx) => {
+  ctx.answerCbQuery();
+  const userId = ctx.from.id;
+  setUserState(userId, BotStates.AWAITING_KEY);
+
+  const promptText =
+    `📝 <b>To'g'ri javoblar kalitini kiriting:</b>\n\n` +
+    `Kalitni quyidagi usullardan birida yuborishingiz mumkin:\n` +
+    `• Ketma-ket: <code>ABCDACBD...</code>\n` +
+    `• Raqamlangan: <code>1-A, 2-B, 3-C, 4-D...</code>\n` +
+    `• Vergul yoki bo'sh joy bilan: <code>A, B, C, D, A</code>\n\n` +
+    `<i>Bekor qilish uchun: /cancel</i>`;
+
+  ctx.reply(promptText, { parse_mode: 'HTML' });
 });
 
 // /help komandasi
@@ -230,6 +283,44 @@ bot.on('document', async (ctx) => {
   } else {
     ctx.reply("Iltimos, o'quvchining test varaqasi rasmini yuboring.");
   }
+});
+
+// Telegram Mini App'dan yuborilgan ma'lumotlarni qabul qilish (tg.sendData)
+bot.on('message', async (ctx, next) => {
+  const webAppData = ctx.message?.web_app_data;
+  if (!webAppData?.data) {
+    return next();
+  }
+
+  try {
+    const payload = JSON.parse(webAppData.data);
+    if (payload.type === 'test_batch_results') {
+      const { totalCount, validCount, avgScore, students = [] } = payload;
+
+      let msg = `📊 <b>Muallim AI: Sinf test natijalari</b>\n\n`;
+      msg += `📁 Jami daftarlar: <b>${totalCount} ta</b>\n`;
+      msg += `✅ Muvaffaqiyatli tekshirildi: <b>${validCount} ta</b>\n`;
+      msg += `📈 O'rtacha ko'rsatkich: <b>${avgScore}%</b>\n\n`;
+      msg += `<b>O'quvchilar ro'yxati:</b>\n`;
+
+      students.forEach((st, idx) => {
+        if (st.success) {
+          const markEmoji = st.mark === 5 ? '🟢 5' : st.mark === 4 ? '🔵 4' : st.mark === 3 ? '🟡 3' : '🔴 2';
+          msg += `${idx + 1}. <b>${st.name}</b> — ${st.correct} ta to'g'ri (${st.scorePercent}%) | Baho: <b>${markEmoji}</b>\n`;
+        } else {
+          msg += `${idx + 1}. <b>${st.name}</b> — ❌ Tekshirib bo'lmadi\n`;
+        }
+      });
+
+      msg += `\n💡 <i>Hisobot Muallim.uz Mini App orqali yuborildi.</i>`;
+
+      await ctx.reply(msg, { parse_mode: 'HTML' });
+      return;
+    }
+  } catch (err) {
+    console.error("web_app_data tahlil xatosi:", err);
+  }
+  return next();
 });
 
 // Botni ishga tushirish

@@ -234,7 +234,7 @@ if (!process.env.VERCEL) {
 // Agar BOT_TOKEN berilgan bo'lsa va Vercel serverless bo'lmasa, Telegram botini ishga tushiramiz
 const botToken = process.env.BOT_TOKEN;
 if (!process.env.VERCEL && botToken && botToken !== 'your_telegram_bot_token_here') {
-  const webAppUrl = process.env.WEBAPP_URL || `http://localhost:${PORT}`;
+  const webAppUrl = process.env.WEBAPP_URL || 'https://muallim-uz-one.vercel.app';
   const bot = new Telegraf(botToken);
 
   // Xatoliklarni global ushlash (server to'xtab qolmasligi uchun)
@@ -246,34 +246,43 @@ if (!process.env.VERCEL && botToken && botToken !== 'your_telegram_bot_token_her
     try {
       const isHttps = webAppUrl.startsWith('https://');
 
+      // Doimiy Menu Button o'rnatish
       if (isHttps) {
-        await ctx.reply(
-          `👋 <b>Assalomu alaykum, ${ctx.from.first_name || "O'qituvchi"}!</b>\n\n` +
-          `"Muallim.uz" tizimining qulay va sodda vizual ilovasi orqali testlarni tekshirish uchun pastdagi tugmani bosing:`,
-          {
-            parse_mode: 'HTML',
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "🚀 Testni tekshirish (Mini App)",
-                    web_app: { url: webAppUrl },
-                  },
-                ],
-              ],
+        try {
+          await ctx.telegram.setChatMenuButton({
+            chat_id: ctx.chat.id,
+            menu_button: {
+              type: 'web_app',
+              text: '🚀 Muallim AI',
+              web_app: { url: webAppUrl },
             },
-          }
-        );
+          });
+        } catch (_) {}
+      }
+
+      const welcomeText =
+        `👋 <b>Assalomu alaykum, ${ctx.from.first_name || "Hurmatli O'qituvchi"}!</b>\n\n` +
+        `🤖 <b>"Muallim.uz"</b> — Sun'iy intellekt (Vision AI) asosidagi aqlli o'qituvchi yordamchisiga xush kelibsiz!\n\n` +
+        `📱 <b>Mini App orqali:</b>\n` +
+        `Bir vaqtda butun sinf daftarlarini (10-30 ta) tekshiring, Excel yuklab oling va natijalarni Telegramga yuboring.`;
+
+      if (isHttps) {
+        await ctx.reply(welcomeText, {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "🚀 Testni tekshirish (Mini App)",
+                  web_app: { url: webAppUrl },
+                },
+              ],
+            ],
+          },
+        });
       } else {
         await ctx.reply(
-          `👋 <b>Assalomu alaykum, ${ctx.from.first_name || "O'qituvchi"}!</b>\n\n` +
-          `⚠️ <b>Eslatma:</b> Telegram WebApp tugmasi faqat <b>HTTPS</b> manzillar bilan ishlaydi (hozir: <code>${webAppUrl}</code>).\n\n` +
-          `💻 <b>Brauzerda ochib tekshirish uchun bosing:</b>\n` +
-          `<a href="${webAppUrl}">${webAppUrl}</a>\n\n` +
-          `📱 <b>Telegram ichida ochiladigan qilish uchun:</b>\n` +
-          `1. Bepul HTTPS tunnel oching (masalan, yangi terminalda):\n` +
-          `<code>npx localtunnel --port ${PORT}</code>\n` +
-          `2. Chiqqan <i>https://...loca.lt</i> havolani <code>.env</code> faylidagi <code>WEBAPP_URL</code> ga qo'ying.`,
+          welcomeText + `\n\n💻 <b>Brauzerda ochish:</b>\n<a href="${webAppUrl}">${webAppUrl}</a>`,
           { parse_mode: 'HTML', disable_web_page_preview: true }
         );
       }
@@ -282,12 +291,47 @@ if (!process.env.VERCEL && botToken && botToken !== 'your_telegram_bot_token_her
     }
   });
 
+  // Mini App'dan jo'natilgan natijalarni qabul qilish (tg.sendData)
+  bot.on('message', async (ctx, next) => {
+    const webAppData = ctx.message?.web_app_data;
+    if (!webAppData?.data) {
+      return next();
+    }
+
+    try {
+      const payload = JSON.parse(webAppData.data);
+      if (payload.type === 'test_batch_results') {
+        const { totalCount, validCount, avgScore, students = [] } = payload;
+
+        let msg = `📊 <b>Muallim AI: Sinf test natijalari</b>\n\n`;
+        msg += `📁 Jami daftarlar: <b>${totalCount} ta</b>\n`;
+        msg += `✅ Muvaffaqiyatli tekshirildi: <b>${validCount} ta</b>\n`;
+        msg += `📈 O'rtacha ko'rsatkich: <b>${avgScore}%</b>\n\n`;
+        msg += `<b>O'quvchilar ro'yxati:</b>\n`;
+
+        students.forEach((st, idx) => {
+          if (st.success) {
+            const markEmoji = st.mark === 5 ? '🟢 5' : st.mark === 4 ? '🔵 4' : st.mark === 3 ? '🟡 3' : '🔴 2';
+            msg += `${idx + 1}. <b>${st.name}</b> — ${st.correct} ta to'g'ri (${st.scorePercent}%) | Baho: <b>${markEmoji}</b>\n`;
+          } else {
+            msg += `${idx + 1}. <b>${st.name}</b> — ❌ Tekshirib bo'lmadi\n`;
+          }
+        });
+
+        msg += `\n💡 <i>Hisobot Muallim.uz Mini App orqali yuborildi.</i>`;
+
+        await ctx.reply(msg, { parse_mode: 'HTML' });
+        return;
+      }
+    } catch (err) {
+      console.error("web_app_data tahlil xatosi:", err);
+    }
+    return next();
+  });
+
   bot.launch().then(() => {
     console.log("📱 Telegram Mini App bot faollashtirildi.");
-    if (!webAppUrl.startsWith('https://')) {
-      console.log(`ℹ️  Eslatma: Telegram WebApp tugmasi uchun HTTPS kerak. Hozirgi URL: ${webAppUrl}`);
-      console.log(`💡 HTTPS olish uchun: npx localtunnel --port ${PORT}`);
-    }
+    console.log(`🔗 WebApp URL: ${webAppUrl}`);
   }).catch((err) => {
     console.warn("Telegram botni ishga tushirishda xatolik (WebApp veb-server ishlashda davom etadi):", err.message);
   });

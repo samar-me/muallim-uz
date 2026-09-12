@@ -172,6 +172,7 @@ const batchTotalCount = document.getElementById('batchTotalCount');
 const batchAvgScore = document.getElementById('batchAvgScore');
 const gradeStatsBadges = document.getElementById('gradeStatsBadges');
 const btnExportCsv = document.getElementById('btnExportCsv');
+const btnSendTgResults = document.getElementById('btnSendTgResults');
 const resultsTableBody = document.getElementById('resultsTableBody');
 const btnNextStudent = document.getElementById('btnNextStudent');
 const btnResetAll = document.getElementById('btnResetAll');
@@ -254,7 +255,7 @@ if (stepperStep3) {
     if (batchResults && batchResults.length > 0) {
       showScreen(3);
     } else {
-      showToast(t('uploadAlert'), 'info');
+      alert(t('uploadTip') || "Avval daftarlarni tekshiring");
     }
   });
 }
@@ -984,6 +985,49 @@ btnExportCsv.addEventListener('click', () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 });
+
+// Telegramga natijalarni yuborish (Telegram WebApp sendData)
+if (btnSendTgResults) {
+  btnSendTgResults.addEventListener('click', () => {
+    if (!batchResults || batchResults.length === 0) return;
+    haptic('medium');
+
+    const validResults = batchResults.filter(r => r.success);
+    const totalCount = batchResults.length;
+    let avgScore = 0;
+    if (validResults.length > 0) {
+      const totalScore = validResults.reduce((sum, r) => sum + Number(r.scorePercent || 0), 0);
+      avgScore = Math.round(totalScore / validResults.length);
+    }
+
+    const payload = {
+      type: 'test_batch_results',
+      totalCount,
+      validCount: validResults.length,
+      avgScore,
+      students: batchResults.map(r => ({
+        name: r.studentName || `${r.sheetNumber}-daftar`,
+        correct: r.correct || 0,
+        incorrect: r.incorrect || 0,
+        scorePercent: r.scorePercent || 0,
+        mark: r.mark || 2,
+        success: !!r.success,
+      })),
+    };
+
+    if (tg && typeof tg.sendData === 'function') {
+      try {
+        tg.sendData(JSON.stringify(payload));
+        haptic('success');
+      } catch (err) {
+        console.error("tg.sendData xatosi:", err);
+        alert(t('telegramSentSuccess') || "Natijalar Telegram botga yuborildi!");
+      }
+    } else {
+      alert(t('telegramSentSuccess') || "Natijalar Telegram botga yuborildi!");
+    }
+  });
+}
 
 // Keyingi daftarlarni tekshirish (Kalitni saqlab qolgan holda 2-sahifaga qaytish)
 btnNextStudent.addEventListener('click', () => {
