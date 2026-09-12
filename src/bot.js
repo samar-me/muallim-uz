@@ -7,76 +7,77 @@ import { extractAnswersFromImage } from './vision.js';
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
-if (!token || token === 'your_telegram_bot_token_here') {
-  console.error("XATOLIK: BOT_TOKEN .env faylida ko'rsatilmagan!");
-  process.exit(1);
+let bot = null;
+if (token && token !== 'your_telegram_bot_token_here') {
+  bot = new Telegraf(token);
+} else {
+  console.warn("DIQQAT: BOT_TOKEN ko'rsatilmagan.");
 }
-
-const bot = new Telegraf(token);
 const webAppUrl = process.env.WEBAPP_URL || 'https://muallim-uz-one.vercel.app';
 
-// Xatoliklarni global ushlash
-bot.catch((err, ctx) => {
-  console.error(`Bot xatoligi (${ctx.updateType}):`, err);
-  try {
-    ctx.reply("⚠️ Kutilmagan texnik xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
-  } catch (replyErr) {
-    console.error("Xatolik xabarini yuborishda muammo:", replyErr);
-  }
-});
+if (bot) {
+  // Xatoliklarni global ushlash
+  bot.catch((err, ctx) => {
+    console.error(`Bot xatoligi (${ctx.updateType}):`, err);
+    try {
+      ctx.reply("⚠️ Kutilmagan texnik xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
+    } catch (replyErr) {
+      console.error("Xatolik xabarini yuborishda muammo:", replyErr);
+    }
+  });
 
-// /start komandasi (Mini App va Bot buyruqlari)
-bot.start(async (ctx) => {
-  const userId = ctx.from.id;
-  clearSession(userId);
+  // /start komandasi (Mini App va Bot buyruqlari)
+  bot.start(async (ctx) => {
+    const userId = ctx.from.id;
+    clearSession(userId);
 
-  // Pastki doimiy "Menu Button"ni Mini App ga o'rnatish
-  try {
+    // Pastki doimiy "Menu Button"ni Mini App ga o'rnatish
+    try {
+      if (webAppUrl.startsWith('https://')) {
+        await ctx.telegram.setChatMenuButton({
+          chat_id: ctx.chat.id,
+          menu_button: {
+            type: 'web_app',
+            text: '🚀 Muallim AI',
+            web_app: { url: webAppUrl },
+          },
+        });
+      }
+    } catch (e) {
+      // Menu button qo'yishda muammo bo'lsa xabar berish shart emas
+    }
+
+    const welcomeMessage =
+      `👋 <b>Assalomu alaykum, ${ctx.from.first_name || "Hurmatli O'qituvchi"}!</b>\n\n` +
+      `🤖 <b>"Muallim.uz"</b> — Sun'iy intellekt (Vision AI) asosidagi aqlli o'qituvchi yordamchisiga xush kelibsiz!\n\n` +
+      `💡 <b>Sizda 2 xil qulay usul bor:</b>\n` +
+      `1️⃣ <b>Mini App orqali (Tavsiya etiladi):</b> Pastdagi tugma orqali ilovani to'g'ridan-to'g'ri Telegram ichida ochib, ` +
+      `bir vaqtda butun sinf daftarlarini (10-30 ta) tekshiring, Excel yuklang yoki natijalarni Telegramga yuboring!\n\n` +
+      `2️⃣ <b>Oddiy Bot chatida:</b> /new_test buyrug'i orqali kalit kiritib, daftarlar rasmini bittalab shu chatga yuboring.`;
+
+    const inlineKeyboard = [];
     if (webAppUrl.startsWith('https://')) {
-      await ctx.telegram.setChatMenuButton({
-        chat_id: ctx.chat.id,
-        menu_button: {
-          type: 'web_app',
-          text: '🚀 Muallim AI',
+      inlineKeyboard.push([
+        {
+          text: "🚀 Muallim AI Mini App (Ochish)",
           web_app: { url: webAppUrl },
         },
-      });
+      ]);
     }
-  } catch (e) {
-    // Menu button qo'yishda muammo bo'lsa xabar berish shart emas
-  }
-
-  const welcomeMessage =
-    `👋 <b>Assalomu alaykum, ${ctx.from.first_name || "Hurmatli O'qituvchi"}!</b>\n\n` +
-    `🤖 <b>"Muallim.uz"</b> — Sun'iy intellekt (Vision AI) asosidagi aqlli o'qituvchi yordamchisiga xush kelibsiz!\n\n` +
-    `💡 <b>Sizda 2 xil qulay usul bor:</b>\n` +
-    `1️⃣ <b>Mini App orqali (Tavsiya etiladi):</b> Pastdagi tugma orqali ilovani to'g'ridan-to'g'ri Telegram ichida ochib, ` +
-    `bir vaqtda butun sinf daftarlarini (10-30 ta) tekshiring, Excel yuklang yoki natijalarni Telegramga yuboring!\n\n` +
-    `2️⃣ <b>Oddiy Bot chatida:</b> /new_test buyrug'i orqali kalit kiritib, daftarlar rasmini bittalab shu chatga yuboring.`;
-
-  const inlineKeyboard = [];
-  if (webAppUrl.startsWith('https://')) {
     inlineKeyboard.push([
       {
-        text: "🚀 Muallim AI Mini App (Ochish)",
-        web_app: { url: webAppUrl },
+        text: "📝 Chatda tekshirish (/new_test)",
+        callback_data: "cmd_new_test",
       },
     ]);
-  }
-  inlineKeyboard.push([
-    {
-      text: "📝 Chatda tekshirish (/new_test)",
-      callback_data: "cmd_new_test",
-    },
-  ]);
 
-  await ctx.reply(welcomeMessage, {
-    parse_mode: 'HTML',
-    reply_markup: {
-      inline_keyboard: inlineKeyboard,
-    },
+    await ctx.reply(welcomeMessage, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: inlineKeyboard,
+      },
+    });
   });
-});
 
 // Inline tugma bosilganda /new_test chaqirish
 bot.action('cmd_new_test', (ctx) => {
@@ -322,17 +323,22 @@ bot.on('message', async (ctx, next) => {
   }
   return next();
 });
+}
 
-// Botni ishga tushirish
-bot.launch().then(() => {
-  console.log("=========================================");
-  console.log("🚀 'Muallim.uz' Telegram boti ishga tushdi!");
-  console.log(`🤖 AI Provayder: ${process.env.AI_PROVIDER || 'gemini (avtomatik)'}`);
-  console.log("=========================================");
-}).catch((err) => {
-  console.error("Botni ishga tushirishda xatolik:", err);
-});
+// Botni ishga tushirish (Faqat Vercel bo'lmagan standalone rejimda polling qiladi)
+if (bot && !process.env.VERCEL) {
+  bot.launch().then(() => {
+    console.log("=========================================");
+    console.log("🚀 'Muallim.uz' Telegram boti ishga tushdi!");
+    console.log(`🤖 AI Provayder: ${process.env.AI_PROVIDER || 'gemini (avtomatik)'}`);
+    console.log("=========================================");
+  }).catch((err) => {
+    console.error("Botni ishga tushirishda xatolik:", err);
+  });
 
-// Jarayonni toza to'xtatish (Graceful shutdown)
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  // Jarayonni toza to'xtatish (Graceful shutdown)
+  process.once('SIGINT', () => bot.stop('SIGINT'));
+  process.once('SIGTERM', () => bot.stop('SIGTERM'));
+}
+
+export { bot };
