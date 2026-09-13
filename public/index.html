@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Muallim.uz — Aqlli O'qituvchi Yordamchisi</title>
-  <link rel="icon" type="image/jpeg" href="/muallim_logo.jpg">
+  <link rel="icon" type="image/svg+xml" href="/muallim_logo.svg">
+  <link rel="alternate icon" type="image/jpeg" href="/muallim_logo.jpg">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -325,8 +326,45 @@
       <!-- Top Row: Logo, Brand & Action Pills -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl overflow-hidden shadow-md shrink-0 border border-emerald-500/20">
-            <img src="/muallim_logo.jpg" alt="Muallim AI Logo" class="w-full h-full object-cover">
+          <div class="w-10 h-10 rounded-2xl overflow-hidden shadow-md shrink-0 border border-emerald-500/20 flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="hdrBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981"/>
+                  <stop offset="50%" stop-color="#059669"/>
+                  <stop offset="100%" stop-color="#047857"/>
+                </linearGradient>
+                <linearGradient id="hdrCheckGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#34d399"/>
+                  <stop offset="100%" stop-color="#10b981"/>
+                </linearGradient>
+              </defs>
+              <rect width="120" height="120" rx="28" fill="url(#hdrBgGrad)"/>
+              <g>
+                <path d="M 60 84 C 50 78, 32 78, 22 81 L 22 46 C 32 43, 50 43, 60 49 Z" fill="#ffffff"/>
+                <path d="M 60 84 C 70 78, 88 78, 98 81 L 98 46 C 88 43, 70 43, 60 49 Z" fill="#f1f5f9"/>
+                <path d="M 60 49 L 60 84" stroke="#065f46" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 22 46 C 32 43, 50 43, 60 49 C 70 43, 88 43, 98 46 L 98 81 C 88 78, 70 78, 60 84 C 50 78, 32 78, 22 81 Z" fill="none" stroke="#065f46" stroke-width="2.5" stroke-linejoin="round"/>
+              </g>
+              <g stroke="#047857" stroke-width="2" stroke-linecap="round" fill="none">
+                <path d="M 44 48 C 38 48, 35 53, 37 59 C 34 62, 35 68, 39 70 C 37 74, 42 77, 47 75"/>
+                <path d="M 76 48 C 82 48, 85 53, 83 59 C 86 62, 85 68, 81 70 C 83 74, 78 77, 73 75"/>
+                <path d="M 43 56 L 49 56 L 53 52"/>
+                <path d="M 77 56 L 71 56 L 67 52"/>
+                <path d="M 47 66 L 53 66"/>
+                <path d="M 73 66 L 67 66"/>
+              </g>
+              <g fill="#047857">
+                <circle cx="53" cy="52" r="2.2"/>
+                <circle cx="67" cy="52" r="2.2"/>
+                <circle cx="49" cy="56" r="1.8"/>
+                <circle cx="71" cy="56" r="1.8"/>
+                <circle cx="53" cy="66" r="1.8"/>
+                <circle cx="67" cy="66" r="1.8"/>
+              </g>
+              <path d="M 46 62 L 56 74 L 84 38" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 46 62 L 56 74 L 84 38" fill="none" stroke="url(#hdrCheckGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div>
             <div class="flex items-center gap-1.5">
