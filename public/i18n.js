@@ -13,6 +13,7 @@ const I18N = {
     appSubtitleEssay: "Insho va Diktant tekshiruvchi",
     appSubtitleMath: "Matematika va Aniq fanlar",
     guideBtn: "Qo'llanma",
+    supportBtn: "Aloqa",
     langBtn: "O'zbekcha",
 
     // Tabs
@@ -240,6 +241,7 @@ const I18N = {
     appSubtitleEssay: "Иншо ва Диктант текширувчи",
     appSubtitleMath: "Математика ва Аниқ фанлар",
     guideBtn: "Қўлланма",
+    supportBtn: "Алоқа",
     langBtn: "Ўзбекча",
 
     // Tabs
@@ -467,6 +469,7 @@ const I18N = {
     appSubtitleEssay: "Проверка сочинений и диктантов",
     appSubtitleMath: "Математика и точные науки",
     guideBtn: "Инструкция",
+    supportBtn: "Помощь",
     langBtn: "Русский",
 
     // Tabs

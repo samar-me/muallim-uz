@@ -69,6 +69,10 @@ if (bot) {
         text: "📝 Chatda tekshirish (/new_test)",
         callback_data: "cmd_new_test",
       },
+      {
+        text: "💬 Bog'lanish (Yordam)",
+        url: "https://t.me/muallim_support",
+      },
     ]);
 
     await ctx.reply(welcomeMessage, {
@@ -101,15 +105,40 @@ bot.help((ctx) => {
   const helpText =
     `📖 <b>Foydalanish bo'yicha qo'llanma:</b>\n\n` +
     `• /new_test — Yangi test kalitini kiritish\n` +
+    `• /support — Texnik yordam va aloqa\n` +
     `• /cancel — Joriy amalni bekor qilish\n` +
     `• /help — Yordam va ko'rsatmalar\n\n` +
     `💡 <b>Kalit kiritish namunalari:</b>\n` +
     `1. Ketma-ket: <code>ABCDACBD</code>\n` +
     `2. Raqamlangan: <code>1-A, 2-B, 3-C, 4-D</code>\n\n` +
     `📸 <b>Rasm yuborishda:</b>\n` +
-    `Varaqa yaxshi yoritilgan, tekis va harflar aniq ko'ringan bo'lishi tavsiya etiladi.`;
+    `Varaqa yaxshi yoritilgan, tekis va harflar aniq ko'ringan bo'lishi tavsiya etiladi.\n\n` +
+    `👨‍💻 <b>Savol yoki muammo bo'lsa:</b> @muallim_support`;
 
   ctx.reply(helpText, { parse_mode: 'HTML' });
+});
+
+// /support komandasi
+bot.command('support', (ctx) => {
+  const supportText =
+    `💬 <b>Qo'llab-quvvatlash xizmati (Muallim AI Support):</b>\n\n` +
+    `Biror xatolik, texnik nosozlik yoki taklifingiz bo'lsa, bemalol administratorga yozishingiz mumkin:\n\n` +
+    `👉 <b>Administrator:</b> @muallim_support\n\n` +
+    `<i>Biz har bir ustozimizning murojaatini tezkorlik bilan ko'rib chiqamiz!</i>`;
+
+  ctx.reply(supportText, {
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✍️ Adminga xabar yozish",
+            url: "https://t.me/muallim_support",
+          },
+        ],
+      ],
+    },
+  });
 });
 
 // /cancel komandasi
