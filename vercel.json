@@ -9,14 +9,7 @@
       "source": "/health",
       "destination": "/api/index.js"
     },
-    {
-      "source": "/muallim_logo.jpg",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/muallim_banner.jpg",
-      "destination": "/api/index.js"
-    },
+
     {
       "source": "/(.*)",
       "destination": "/public/$1"
