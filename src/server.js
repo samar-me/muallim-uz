@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rasm va logolarni ishonchli uzatish
-app.get('/muallim_logo.jpg', (req, res) => {
+app.get(['/muallim_logo.jpg', '/public/muallim_logo.jpg', '/api/muallim_logo.jpg'], (req, res) => {
   const possiblePaths = [
     path.join(publicDir, 'muallim_logo.jpg'),
     path.join(process.cwd(), 'public', 'muallim_logo.jpg'),
@@ -40,7 +40,7 @@ app.get('/muallim_logo.jpg', (req, res) => {
   res.status(404).send('Logo topilmadi');
 });
 
-app.get('/muallim_banner.jpg', (req, res) => {
+app.get(['/muallim_banner.jpg', '/public/muallim_banner.jpg', '/api/muallim_banner.jpg'], (req, res) => {
   const possiblePaths = [
     path.join(publicDir, 'muallim_banner.jpg'),
     path.join(process.cwd(), 'public', 'muallim_banner.jpg'),
@@ -56,8 +56,9 @@ app.get('/muallim_banner.jpg', (req, res) => {
   res.status(404).send('Banner topilmadi');
 });
 
-// Statik frontend fayllarini tarqatish (public papka)
+// Statik frontend fayllarini tarqatish (public papka va /public prefiksi bilan)
 app.use(express.static(publicDir));
+app.use('/public', express.static(publicDir));
 
 // Xotirada fayllarni ushlab turish uchun Multer sozlamasi (maksimal 15 MB)
 const upload = multer({
