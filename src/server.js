@@ -232,6 +232,14 @@ app.post('/api/telegram-webhook', async (req, res) => {
   }
 });
 
+// Statik rasmlarni serverless orqali to'g'ridan-to'g'ri berish
+app.get('/muallim_logo.jpg', (req, res) => {
+  res.sendFile(path.join(publicDir, 'muallim_logo.jpg'));
+});
+app.get('/muallim_banner.jpg', (req, res) => {
+  res.sendFile(path.join(publicDir, 'muallim_banner.jpg'));
+});
+
 // Bosh sahifa (index.html)
 app.get('/', (req, res) => {
   res.sendFile(path.join(publicDir, 'index.html'));
