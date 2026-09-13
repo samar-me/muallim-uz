@@ -26,6 +26,14 @@ if (bot) {
     }
   });
 
+  // Har bir xabarni konsolda kuzatish (monitoring)
+  bot.use((ctx, next) => {
+    const user = ctx.from ? `${ctx.from.first_name || ''} (@${ctx.from.username || ctx.from.id})` : "Noma'lum";
+    const text = ctx.message?.text || ctx.updateType;
+    console.log(`📩 [Bot Xabari] ${user}: ${text}`);
+    return next();
+  });
+
   // /start komandasi (Mini App va Bot buyruqlari)
   bot.start(async (ctx) => {
     const userId = ctx.from.id;
