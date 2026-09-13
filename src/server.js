@@ -3,6 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { extractAnswersFromBuffer, checkEssayFromBuffer, checkMathFromBuffer } from './vision.js';
 import { gradeTest } from './grader.js';
@@ -21,6 +22,39 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rasm va logolarni ishonchli uzatish
+app.get('/muallim_logo.jpg', (req, res) => {
+  const possiblePaths = [
+    path.join(publicDir, 'muallim_logo.jpg'),
+    path.join(process.cwd(), 'public', 'muallim_logo.jpg'),
+    path.resolve('public/muallim_logo.jpg')
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.sendFile(path.resolve(p));
+    }
+  }
+  res.status(404).send('Logo topilmadi');
+});
+
+app.get('/muallim_banner.jpg', (req, res) => {
+  const possiblePaths = [
+    path.join(publicDir, 'muallim_banner.jpg'),
+    path.join(process.cwd(), 'public', 'muallim_banner.jpg'),
+    path.resolve('public/muallim_banner.jpg')
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.sendFile(path.resolve(p));
+    }
+  }
+  res.status(404).send('Banner topilmadi');
+});
 
 // Statik frontend fayllarini tarqatish (public papka)
 app.use(express.static(publicDir));
